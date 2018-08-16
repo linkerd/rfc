@@ -4,7 +4,7 @@ The RFC introduces the notion of service profiles.  A service profile is an
 object that describes characteristics that a service may have.  Throughout
 this RFC we will extensively use the REST Service Profile as an example.  The
 REST Service Profile describes the characteristics of an HTTP service that
-obeys the tenants of [REST]().
+obeys the tenants of [REST](https://en.wikipedia.org/wiki/Representational_state_transfer).
 
 Service profiles are useful because this allows Linkerd to behave differently
 depending on the characteristics of the service to which it is making requests.
@@ -38,9 +38,9 @@ expanded over time.
 While some characteristics such as retry budgets apply to the service as a
 whole, many characteristics vary depending on the request.  For example,
 idempotence may vary depending on the request's HTTP method or timeouts might
-vary depending on the request's HTTP path.  
+vary depending on the request's HTTP path.
 
-To accommodate this, a service profile contains some top level characteristics 
+To accommodate this, a service profile contains some top level characteristics
 that apply to the whole service and an ordered list of request policy objects
 which define the characteristics which apply to certain classes of requests.
 
@@ -51,7 +51,7 @@ message ServiceProfile {
   Duration default_timeout = 3;
   // More service level characteristics to be added in the future
 }
-``` 
+```
 
 Each request policy object defines a request match condition that describes
 which requests fall under this policy.  If a request matches more than one
