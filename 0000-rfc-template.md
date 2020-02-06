@@ -30,10 +30,10 @@ Please avoid discussing your proposed solution.
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
-- Its interaction with other features is clear.
-- It is reasonably clear how the contribution would be implemented.
-- Corner cases are dissected by example.
-- Dependencies on libraries, tools, projects or work that isn't yet complete.
+- Its interaction with other features is clear
+- It is reasonably clear how the contribution would be implemented
+- Corner cases are dissected by example
+- Dependencies on libraries, tools, projects or work that isn't yet complete
 - Use Cases
 - Goals
 - Non-Goals
