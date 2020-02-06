@@ -1,8 +1,7 @@
 - Contribution Name: linkerd_rfc_process
-
-* Start Date: 2019-01-23
-* RFC PR: NA
-* Linkerd Issue: NA
+- Start Date: 2019-01-23
+- RFC PR: NA
+- Linkerd Issue: NA
 
 # Summary
 
@@ -38,19 +37,18 @@ Previously this work was all managed via Github issues in projects boards, with 
 
 Inspiration from:
 
-* [The Rust RFC process](https://github.com/rust-lang/rfcs)
-* [The Python PEP process](https://www.python.org/dev/peps/pep-0001/)
-* [The Kubernetes KEP process](https://github.com/kubernetes/enhancements/tree/master/keps)
+- [The Rust RFC process](https://github.com/rust-lang/rfcs)
+- [The Python PEP process](https://www.python.org/dev/peps/pep-0001/)
+- [The Kubernetes KEP process](https://github.com/kubernetes/enhancements/tree/master/keps)
 
 # Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
-* As much of this was adapted from the Rust RFC process, I removed RFC #'s, because I wasn't clear on the utility, but that could be re-introduced if needed.
+- As much of this was adapted from the Rust RFC process, I removed RFC #'s, because I wasn't clear on the utility, but that could be re-introduced if needed.
 
 # Future possibilities
 
 [future-possibilities]: #future-possibilities
 
 This is a starting place and can/should be ammended if there are obvious improvements.
-
