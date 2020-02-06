@@ -12,15 +12,17 @@
 
 One paragraph explanation of the proposed contribution.
 
-# Motivation
+# Problem Statement
 
-[motivation]: #motivation
+[problem-statement]: #problem-statement
 
-Why are we doing this? What use cases does it support? What is the expected outcome?
+What problem are you trying to solve? What is the context or background in which this problem exists? Once the proposal is implemented, how will the system change?
 
-# Reference-level explanation
+Please avoid discussing your proposed solution.
 
-[reference-level-explanation]: #reference-level-explanation
+# Design proposal
+
+[design-proposal]: #design-proposal
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
