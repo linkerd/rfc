@@ -45,7 +45,10 @@ Inspiration from:
 
 [unresolved-questions]: #unresolved-questions
 
-- As much of this was adapted from the Rust RFC process, I removed RFC #'s, because I wasn't clear on the utility, but that could be re-introduced if needed.
+- How reviewers and approvers are assigned to an RFC
+- Example schedule, deadline, and time frame for each stage of an RFC
+- Communication/notification mechanisms
+- Review meetings and escalation procedure
 
 # Future possibilities
 

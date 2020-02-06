@@ -52,9 +52,9 @@ A few examples of what this can include are:
   relevant papers to refer to, this can serve as a more detailed theoretical background.
 
 This section is intended to encourage you as an author to think about the lessons from other
-languages, provide readers of your RFC with a fuller picture. If there is no prior art, that is
+software, provide readers of your RFC with a fuller picture. If there is no prior art, that is
 fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from
-other languages.
+other software.
 
 # Unresolved questions
 
