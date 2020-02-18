@@ -47,18 +47,27 @@ good indication that the RFC is worth pursuing.
 
 [what the process is]: #what-the-process-is
 
-In short, to get a major feature added to Linkerd, one must first get the RFC merged into the RFC
-repository as a markdown file. At that point the RFC is "active" and may be implemented with the
-goal of eventual inclusion into Linkerd.
+In short, to get a major feature added to Linkerd, one must first get the RFC merged into the RFC `problem/` directory as a markdown file.
 
+Once the feature is accepted and one is interested in the design, the markdown file should be moved into the `design/` directory.
+
+At that point, the RFC is "active" and may be implemented with the goal of eventual inclusion into Linkerd.
+
+### Step 1
 1. Fork the [RFC repository](https://github.com/linkerd/rfc)
-2. Copy `0000-rfc-template.md` to
-   `active/0000-my-contribution.md` (where "my-contribution" is descriptive.).
-3. Fill in the RFC. Put care into the details: RFCs that do not present convincing motivation, demonstrate lack of understanding of the design's impact, or are disingenuous about the drawbacks or alternatives tend to be poorly-received.
-4. Submit a pull request. As a pull request the RFC will receive feedback from the larger community, and the author should be prepared to revise it in response.
-5. Each pull request will be labeled with the most relevant reviewer, who will lead its triage.
-6. Build consensus and integrate feedback. RFCs that have broad support are much more likely to make progress than those that don't receive any comments. Feel free to reach out to the RFC assignee in particular to get help identifying stakeholders and obstacles.
-7. The team will discuss the RFC pull request, as much as possible in the comment thread of the pull request itself. Offline discussion will be summarized on the pull request comment thread.
+2. Copy `0000-rfc-template.md` to `problem/0000-my-contribution.md` (where "my-contribution" is descriptive.).
+3. Fill in the RFC, leaving the `Design proposal` section for `Step 2`.
+4. Submit a pull request. As a pull request `Problem statement` will receive feedback from the larger community, and the author should be prepared to revise it in response.
+
+### Step 2
+1. Move `problem/0000-my-contribution.md` to `design/0000-my-contribution.md`.
+2. Fill in the `Design proposal` section. Put care into the details: RFCs that do not present convincing motivation, demonstrate lack of understanding of the design's impact, or are disingenuous about the drawbacks or alternatives tend to be poorly-received
+3. Submit a pull request. As a pull request `Design proposal` will receive feedback from the larger community, and the author should be prepared to revise it in response.
+
+### Note
+- Each pull request will be labeled with the most relevant reviewer, who will lead its triage.
+- Build consensus and integrate feedback. RFCs that have broad support are much more likely to make progress than those that don't receive any comments. Feel free to reach out to the RFC assignee in particular to get help identifying stakeholders and obstacles.
+- The team will discuss the RFC pull request, as much as possible in the comment thread of the pull request itself. Offline discussion will be summarized on the pull request comment thread.
 
 RFCs rarely go through this process unchanged, especially as alternatives and drawbacks are
 shown. You can make edits, big and small, to the RFC to clarify or change the design, but make

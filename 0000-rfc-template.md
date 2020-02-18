@@ -12,7 +12,7 @@
 
 One paragraph explanation of the proposed contribution.
 
-# Problem Statement
+# Problem Statement (Step 1)
 
 [problem-statement]: #problem-statement
 
@@ -22,13 +22,11 @@ One paragraph explanation of the proposed contribution.
 
 Please avoid discussing your proposed solution.
 
-# Design proposal
+# Design proposal (Step 2)
 
 [design-proposal]: #design-proposal
 
-**Note**: If you have not already pursued feedback from other project
-developers beforehand, we suggest waiting to do this work until the `Problem
-Statement` has been reviewed.
+**Note**: This should be completed as part of `Step 2`.
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
