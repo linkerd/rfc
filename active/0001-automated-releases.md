@@ -2,7 +2,7 @@
 - @kleimkuhler, @alpeb
 - 2020-02-17
 - 2020-03-03
-- todo: RFC PR: [linkerd/rfc#0000](https://github.com/linkerd/rfc/pull/0000)
+- RFC PR: [linkerd/rfc#7](https://github.com/linkerd/rfc/pull/7)
 - Linkerd Issue: [linkerd/linkerd2#3021](https://github.com/linkerd/linkerd2/issues/3021)
 - Reviewers: @grampelberg
 
