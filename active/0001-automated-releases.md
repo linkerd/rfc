@@ -15,6 +15,10 @@ as possible. The process currently requires that the responsible member take
 multiple manual steps in order for the release artifacts to be properly built,
 tested, and updated for installations.
 
+Instead of addressing these points individually, the release process should be
+re-evaluated as a whole in order to utilize the CI workflow to automate the
+process where possible.
+
 # Problem Statement (Step 1)
 
 [problem-statement]: #problem-statement
@@ -28,17 +32,17 @@ of errors by fault of the responsible member. These include errors such as:
 Additionally, the member must "babysit" the individual steps in order to start
 the next one. This can be time consuming.
 
-Instead of addressing these points individually, the release process should be
-re-evaluated as a whole in order to utilize the CI workflow to automate the
-process where possible.
-
-Once the release process is changed, the responsible member will still be
-required to summarize the change notes and receive feedback by opening a pull
-request. Once that pull request is merged, the member will create a release
-tag which triggers the release process. From there, the building, testing, and
-uploading of the release artifacts will be automated. Once those steps
-complete, the member will send out announcement emails to the CNCF mailing
-lists.
+Once implemented, the release process will be:
+1. The responsible member opens a pull request that updates `CHANGES.md` with
+   the relevant changes for the upcoming release.
+2. Once step `1` is merged, the member pushes a signed tag for the release.
+3. A workflow is triggered that builds the docker images and tags them with
+   the step `2` release tag. Integration tests are run. If tests pass, a
+   GitHub release and created the the release artifcats are uploaded. The
+   hard-coded Linkerd version in [website](https://github.com/linkerd/website)
+   is automatically updated so that the install script points to the release
+   artifacts.
+4. The member sends out CNCF announcement emails.
 
 # Design proposal (Step 2)
 
