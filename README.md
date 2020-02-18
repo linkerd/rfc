@@ -54,12 +54,11 @@ goal of eventual inclusion into Linkerd.
 1. Fork the [RFC repository](https://github.com/linkerd/rfc)
 2. Copy `0000-rfc-template.md` to
    `active/0000-my-contribution.md` (where "my-contribution" is descriptive.).
-3. Fill in the RFC, starting with `Step 1` - the proposal.
+3. Fill in the RFC. Put care into the details: RFCs that do not present convincing motivation, demonstrate lack of understanding of the design's impact, or are disingenuous about the drawbacks or alternatives tend to be poorly-received.
 4. Submit a pull request. As a pull request the RFC will receive feedback from the larger community, and the author should be prepared to revise it in response.
 5. Each pull request will be labeled with the most relevant reviewer, who will lead its triage.
 6. Build consensus and integrate feedback. RFCs that have broad support are much more likely to make progress than those that don't receive any comments. Feel free to reach out to the RFC assignee in particular to get help identifying stakeholders and obstacles.
 7. The team will discuss the RFC pull request, as much as possible in the comment thread of the pull request itself. Offline discussion will be summarized on the pull request comment thread.
-8. Repeat this process with a follow up pull request that integrates the feedback, and completes `Step 2` - the Design. Put care into the details: RFCs that do not present convincing motivation, demonstrate lack of understanding of the design's impact, or are disingenuous about the drawbacks or alternatives tend to be poorly-received.
 
 RFCs rarely go through this process unchanged, especially as alternatives and drawbacks are
 shown. You can make edits, big and small, to the RFC to clarify or change the design, but make
