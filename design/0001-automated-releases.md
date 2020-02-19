@@ -38,13 +38,73 @@ Once implemented, the release process will be:
 2. Once step `1` is merged, the member pushes a signed tag for the release.
 3. A workflow is triggered that builds the docker images and tags them with
    the step `2` release tag. Integration tests are run. If tests pass, a
-   GitHub release and created the the release artifcats are uploaded. The
+   GitHub release and created the the release artifacts are uploaded. The
    hard-coded Linkerd version in [website](https://github.com/linkerd/website)
    is automatically updated so that the install script points to the release
    artifacts.
 4. The member sends out CNCF announcement emails.
 
 # Design proposal (Step 2)
+
+The details of each step are outlined below.
+
+> The responsible member opens a pull request that updates `CHANGES.md` with
+> the relevant changes for the upcoming release.
+
+- The workflows will run unit tests, static checks, and KinD integration tests
+  for this because it continues to trigger pull request conditions
+
+> Step `1` is merged.
+
+- The workflows will be updated to not trigger on `push` events that only edit
+  `.md` files. With this updated condition, the member will not need to wait
+  (or manually cancel) for `master` branch to run through integration tests
+
+> The member runs a new script that creates a new release tag and adds the
+> release changes into the message.
+
+- The script would take a `TAG` argument to use in creating the tag
+- The script would use the top section of `CHANGES.md` to use as the message
+  (used in a later step)
+- The tag should be signed and can be verified as a future possibility
+
+> The tag is pushed to the repository
+
+- A new (5th/release.yml) workflow will be added that is only triggered for
+  tag pushes
+- The workflows will be updated to not run for `push.tags` events since the
+  code that is being tagged has already passed through these workflows. This
+  means that when a new tag is pushed, only the release workflow be triggered
+
+> A workflow is triggered that builds the docker images and tags them with
+> the step `2` release tag. Integration tests are run. If tests pass, a
+> GitHub release and created the the release artifacts are uploaded. The
+> hard-coded Linkerd version in [website](https://github.com/linkerd/website)
+> is automatically updated so that the install script points to the release
+> artifacts.
+
+- `release.yml` workflow will be triggered
+- The workflow does not run for forked repositories, so it will be able to use
+  the GitHub secrets to set up an SSH config for the Packet host
+- The docker images will be rebuilt and tagged with the tag that triggered the
+  workflow run
+- Integration tests will be started with the tagged images on a cloud provider
+  so that we do not need to run them in KinD
+- If integration tests pass, a new GitHub release will be created and the
+  release artifacts will be uploaded
+
+    - Use the tag message as the release body
+
+- Push directly to [website](https://github.com/linkerd/website) update the
+  hard-coded Linkerd version in install script
+
+    - Permissions will need to be added for this to succeed
+
+- Update the helm charts
+- Wait for the website to deploy the updated install script
+
+    - This will essentially just be a `curl` loop that waits for the installed
+      CLI to match the expected tag version
 
 **Waiting until completion of Step 1**
 
