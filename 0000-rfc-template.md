@@ -26,7 +26,7 @@ Please avoid discussing your proposed solution.
 
 [design-proposal]: #design-proposal
 
-**Note**: We suggest waiting to do this work, until Step 1 of the process is complete and you have has received feedback.
+**Note**: This should be completed as part of `Step 2`.
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
