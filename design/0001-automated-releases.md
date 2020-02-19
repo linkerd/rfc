@@ -46,6 +46,8 @@ Once implemented, the release process will be:
 
 # Design proposal (Step 2)
 
+[design-proposal]: #design-proposal
+
 The details of each step are outlined below.
 
 > The responsible member opens a pull request that updates `CHANGES.md` with
@@ -105,23 +107,6 @@ The details of each step are outlined below.
 
     - This will essentially just be a `curl` loop that waits for the installed
       CLI to match the expected tag version
-
-**Waiting until completion of Step 1**
-
-[design-proposal]: #design-proposal
-
-**Note**: We suggest waiting to do this work, until Step 1 of the process is complete and you have has received feedback.
-
-This is the technical portion of the RFC. Explain the design in sufficient detail that:
-
-- Its interaction with other features is clear
-- It is reasonably clear how the contribution would be implemented
-- Corner cases are dissected by example
-- Dependencies on libraries, tools, projects or work that isn't yet complete
-- Use Cases
-- Goals
-- Non-Goals
-- Deliverables
 
 # Prior art
 
