@@ -90,8 +90,11 @@ The details of each step are outlined below.
   the GitHub secrets to set up an SSH config for the Packet host
 - The docker images will be rebuilt and tagged with the tag that triggered the
   workflow run
-- Integration tests will be started with the tagged images on a cloud provider
-  so that we do not need to run them in KinD
+- Integration tests will run both on KinD and cloud
+
+    - These jobs will esssentially be copy/paste of `kind_integration_tests`
+      and `cloud_integration_tests` jobs that already exist
+
 - If integration tests pass, a new GitHub release will be created and the
   release artifacts will be uploaded
 
