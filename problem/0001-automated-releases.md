@@ -1,7 +1,7 @@
 - Automated Releases
 - @kleimkuhler, @alpeb
-- 2020-02-17
-- 2020-03-03
+- 2020-02-17 (beginning of sprint)
+- 2020-03-03 (end of sprint)
 - RFC PR: [linkerd/rfc#7](https://github.com/linkerd/rfc/pull/7)
 - Linkerd Issue: [linkerd/linkerd2#3021](https://github.com/linkerd/linkerd2/issues/3021)
 - Reviewers: @grampelberg
