@@ -2,7 +2,7 @@
 - Implementation Owner: 
 - Start Date: 2020-03-09
 - Target Date: 
-- RFC PR: 
+- RFC PR: [linkerd/rfc#9](https://github.com/linkerd/rfc/pull/9/files)
 - Linkerd Issue: [linkerd/linkerd2#4076](https://github.com/linkerd/linkerd2/issues/4076)
 - Reviewers: (Who should review the code deliverable? ex.@olix0r)
 
