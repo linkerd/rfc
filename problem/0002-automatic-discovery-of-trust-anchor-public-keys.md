@@ -71,7 +71,8 @@ I'm not currently aware of any prior art.
 [unresolved-questions]: #unresolved-questions
 
 - How Linkerd discovers the trust anchors will need to be discussed. Using label selectors against ConfigMaps
-  may be an option.
+  may be an option. However the current method to provide the linkerd-proxy with the trust anchors is not compatible
+  with multiple ConfigMaps. Concatinating multiple trust anchors into a single ConfigMap could also be feasible.
 
 # Future possibilities
 
