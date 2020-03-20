@@ -20,33 +20,20 @@ in terms of success rates and time performance.
 [problem-statement]: #problem-statement
 
 CI jobs inevitably fail occasionally, either because of real problems with the
-code, or because of tests flakiness. We'd like to be able to be informed about
-what tests are being persistently flaky, without having to dig into the CI run
-results themselves. This will allow us to properly prioritize work to fix those
+code, or because of test flakiness. We'd like to stay informed about what tests
+are being persistently flaky, without having to dig into the CI run results
+themselves. This will allow us to properly prioritize work to fix those
 failures.
 
 Besides identifying the most common failures, by surfacing error metrics from the
 CI jobs we'll also have at our disposal an overview of CI's performance, in
 terms of things like success rates and time taken by the jobs. This information
-can be aggregated at the global, workflow and jobs levels.
+can be aggregated at the global, workflow and job levels.
 
-## Phase 1
-
-CI errors are surfaced as annotations in Github's Workflows and Checks APIs.
-Currently our unit and integration tests (both in go and javascript) are not
-exposing errors as annotations. Therefore when a job fails, only a generic error
-is exposed and not the real error message. One first phase would require changes
-in the test suite for it to output errors in a format suitable for Github in
-order to expose them as annotations and through the Workflows and Checks APIs.
-
-CI leverages scripts from `/bin` that will also need to be touched for them to
-properly format their failure output as well (probably through some wrapper
-function).
-
-## Phase 2
-
-Once the CI metrics are surfaced through Github's API, additional functionality
-should be built in order to consume and present that data to operators.
+The first problem to address will be to expose the CI jobs results, which
+currently are only available through Github's UI. With access to that data in
+the appropriate format, we'll then be able to determine how to persist and
+present it to operators.
 
 # Design proposal (Step 2)
 
