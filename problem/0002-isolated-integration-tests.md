@@ -2,8 +2,8 @@
 - Implementation Owner: @kleimkuhler, @alpeb
 - Start Date: 2020-03-18
 - Target Date: 2020-04-03
-- RFC PR: TODO: [linkerd/rfc#0000](https://github.com/linkerd/rfc/pull/0000)
-- Linkerd Issue: [linkerd/linkerd2#4190](https://github.com/linkerd/linkerd2/issues/0000)
+- RFC PR: [linkerd/rfc#12](https://github.com/linkerd/rfc/pull/12)
+- Linkerd Issue: [linkerd/linkerd2#4190](https://github.com/linkerd/linkerd2/issues/4190)
 - Reviewers: @grampelberg
 
 # Summary
