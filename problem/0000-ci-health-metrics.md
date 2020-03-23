@@ -25,10 +25,8 @@ are being persistently flaky, without having to dig into the CI run results
 themselves. This will allow us to properly prioritize work to fix those
 failures.
 
-Besides identifying the most common failures, by surfacing error metrics from the
-CI jobs we'll also have at our disposal an overview of CI's performance, in
-terms of things like success rates and time taken by the jobs. This information
-can be aggregated at the global, workflow and job levels.
+More specifically we'd like to get, for a given time span, the list of error
+messages with their frequency aggregated globally, per workflow and per job.
 
 The first problem to address will be to expose the CI jobs results, which
 currently are only available through Github's UI. With access to that data in
