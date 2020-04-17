@@ -18,7 +18,7 @@ provide mutually-validated TLS (mTLS) connections between meshed endpoints. This
 validation will serve as the basis for auditing and policy functionality.
 
 Today, mTLS is only applied on HTTP connections. This RFC will provide a plan to provide
-ubuitous, automatic, transparent mTLS for all meshed traffic, regardless of protocol.
+ubiquitous, automatic, transparent mTLS for all meshed traffic, regardless of protocol.
 
 ### Goals
 
