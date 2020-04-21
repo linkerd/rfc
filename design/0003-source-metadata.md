@@ -17,7 +17,7 @@ where `X` is the destination workload kind.  On the other hand, when a meshed
 pod receives incoming HTTP requests, there is no equivalent scoping of the
 metrics by source.  In other words, there is no `src_X` Prometheus label, making
 it impossible to break down metrics for incoming traffic by source.  This RFC
-proposes adding `src_X` Prometheus labels for incoming HTTP traffic.
+proposes adding `src_X` Prometheus labels all meshed HTTP traffic.
 
 # Problem Statement (Step 1)
 
@@ -49,7 +49,7 @@ this proposal.
 
 We will use the [Downward
 API](https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#the-downward-api)
-to create and mound a volume in meshed pods which contains a file with the pod
+to create and mount a volume in meshed pods which contains a file with the pod
 owner's resource name and kind.  This is very similar to [the approach used to
 populate pod labels on span
 annotations](https://github.com/linkerd/linkerd2/pull/4199).  These values can
@@ -77,7 +77,6 @@ resource_kind="deployment"
 The proxy would read this file to get a list of labels to apply to its traffic
 metrics.  The way the proxy uses these labels differs for the inbound and
 outbound stacks.
-
 
 For the inbound stack, the proxy will prepend the `dst_` prefix to these labels
 and use them to scope the inbound metrics.  This will result in metrics such as:
@@ -111,16 +110,12 @@ request_total{
 }
 ```
 
-The outbound stack will also encode the source labels in an HTTP header of the
-outgoing request called `l5d-src-labels`.  An example of the value of this
-header would be: `resource_name=web,resource_kind=deployment`.  Encoding this
-source metadata on the request allows it to used by the inbound stack of the
-destination proxy.  Remember when we said we'd come back to inbound?
+The outbound stack will also share the source labels with the inbound stack of
+the destination proxy.  Remember when we said we'd come back to inbound?
 
-In addition to populating the `dst_` labels, the inbound stack will also read
-the `l5d-src-labels` HTTP header from the request, prepend `src_` to them, and
-add them to the label scope.  Thus, the complete inbound metrics would actually
-look like:
+In addition to populating the `dst_` labels, the inbound stack will also use the
+source labels, prepend `src_` to them, and add them to the label scope.
+Thus, the complete inbound metrics would actually look like:
 
 
 ```
@@ -132,6 +127,9 @@ request_total{
   src_resource_kind="deployment",
 }
 ```
+
+The details of how the source labels will be shared between the source outbound
+proxy and the destination inbound proxy are out-of-scope of this RFC.
 
 Note that all of the changes described here are additive to the existing
 Prometheus labels and would not introduce any backwards incompatibility.
@@ -162,17 +160,18 @@ proxy resolve IP addresses to resources would either require an API call which
 would introduce latency in the critical data path or would require an in-process
 cache which would increase the proxy memory footprint.
 
-There is also precedent in Linkerd for proxies to communicate metadata to one
-another using the `l5d-*` headers.  For example, the fully qualified authority
-is communicated between proxies using the `l5d-dst-canonical` header.
+In Istio configuration which do not use mixer, source context is communicated
+through a base64 encoded map of key-value pairs which in an HTTP header.  This
+approach requires reading and decoding this header on a per-request basis, even
+though we know that the source metadata will be the same for all requests on a
+single connection.  By communicating source metadata at the connection level,
+we can avoid doing this work for each request.
 
 # Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
-Existing metrics stack modules in the proxy have a fixed label scope per stack.
-However, this proposal describes labels set dynamically from the incoming
-request. Is this feasible in the proxy stack architecture?
+The details of how to share source metadata will be discussed in another RFC.
 
 # Future possibilities
 
