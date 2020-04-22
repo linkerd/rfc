@@ -37,6 +37,25 @@ does this make the query awkward, it also means that resource-to-resource
 metrics can only be observed on the client side, never on the server side.  This
 limits our ability to measure network latency.
 
+More specifically, here are some examples of questions that cannot be answered
+without introducing source metadata:
+
+* We cannot compare client-side and server-side metrics for the same traffic to
+  identify latency or errors introduced between the two Linkerd proxies (e.g. by
+  the network or by other intermediary proxies)
+* It is difficult to present traffic metrics in a consistent way: top line
+  resource metrics are measured on the server-side by default, but in order to
+  view a breakdown of these metrics by source, the absesnse of source metadata
+  means that we have to switch to displaying client-side metrics.  This is
+  confusing at best and misleading at worst.
+* For traffic from unmeshed sources, the problem is even worse.  In this case
+  we don't have client-side metrics at all and can't display any metrics for
+  this traffic.  Introducing source metadata would allow us to distinguish
+  between meshed and unmeshed traffic on the server side.  While we would not
+  be able to distinguish between different unmeshed sources, we would at least
+  be able to show metrics for traffic from all unmeshed sources aggregated
+  together.
+
 Adding source metadata to HTTP traffic metrics would enable improvements in the
 Linkerd Grafana dashboard, 3rd party tools that consume Linkerd's Prometheus
 metrics, the controller's StatSummary API, and consequently the `linkerd stat`
