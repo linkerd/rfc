@@ -48,13 +48,6 @@ without introducing source metadata:
   view a breakdown of these metrics by source, the absesnse of source metadata
   means that we have to switch to displaying client-side metrics.  This is
   confusing at best and misleading at worst.
-* For traffic from unmeshed sources, the problem is even worse.  In this case
-  we don't have client-side metrics at all and can't display any metrics for
-  this traffic.  Introducing source metadata would allow us to distinguish
-  between meshed and unmeshed traffic on the server side.  While we would not
-  be able to distinguish between different unmeshed sources, we would at least
-  be able to show metrics for traffic from all unmeshed sources aggregated
-  together.
 
 Adding source metadata to HTTP traffic metrics would enable improvements in the
 Linkerd Grafana dashboard, 3rd party tools that consume Linkerd's Prometheus
