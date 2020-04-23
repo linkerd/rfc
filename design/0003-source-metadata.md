@@ -10,54 +10,90 @@
 
 [summary]: #summary
 
-When a meshed pod sends outgoing HTTP requests the Linkerd proxy records metrics
-such as latency and request counters and scopes those metrics by the
-destination.  This is done by setting a `dst_X` label on the Prometheus metrics
-where `X` is the destination workload kind.  On the other hand, when a meshed
-pod receives incoming HTTP requests, there is no equivalent scoping of the
-metrics by source.  In other words, there is no `src_X` Prometheus label, making
-it impossible to break down metrics for incoming traffic by source.  This RFC
-proposes adding `src_X` Prometheus labels all meshed HTTP traffic.
+Linkerd's metrics API lacks the ability to query for server-side metrics when
+doing a resource-to-resource query.  When metrics for a single resource are
+requested, the returned metrics are always measured on the server-side.  But
+when metrics for traffic between two resources is requested, the returned
+metrics are always measured on the client-side.  This behavior is both
+unintuitive and limiting.  Users are frequently unaware or surprised that these
+two types of queries are measured differently.  Without any way to measure
+resource-to-resource traffic metrics on the server-side, it is impossible to
+compare client-side to server-side metrics for this type of traffic to identify
+network introduced latency or errors.
 
 # Problem Statement (Step 1)
 
 [problem-statement]: #problem-statement
 
-Linkerd is not able to add `src_X` labels today because it simply has no
-knowledge of the source resource.  It knows the peer socket address of the
-source, but has no mechanism to convert that address into a Kubernetes resource
-name or type.  This is in contrast to the `dst_X` metadata which the proxy
-gets from the Destination controller when doing service discovery look-ups.
+Linkerd's metrics API requests have this structure:
 
-This asymmetry in metadata can be very limiting when doing queries.  It is
-impossible to determine who the clients of a resource are by looking at that
-resource's metrics alone.  Instead, we need to query the outbound metrics of all
-other resource to find a client with the appropriate `dst_X` label.  Not only
-does this make the query awkward, it also means that resource-to-resource
-metrics can only be observed on the client side, never on the server side.  This
-limits our ability to measure network latency.
+```
+message StatSummaryRequest {
+  ResourceSelection selector = 1;
+  string time_window = 2;
 
-More specifically, here are some examples of questions that cannot be answered
-without introducing source metadata:
+  oneof outbound {
+    Empty none = 3;
+    Resource to_resource   = 4;
+    Resource from_resource = 5;
+  }
 
-* We cannot compare client-side and server-side metrics for the same traffic to
-  identify latency or errors introduced between the two Linkerd proxies (e.g. by
-  the network or by other intermediary proxies)
-* It is difficult to present traffic metrics in a consistent way: top line
-  resource metrics are measured on the server-side by default, but in order to
-  view a breakdown of these metrics by source, the absesnse of source metadata
-  means that we have to switch to displaying client-side metrics.  This is
-  confusing at best and misleading at worst.
+  bool skip_stats = 6;  // true if we want to skip stats from Prometheus
+  bool tcp_stats = 7;
+}
+```
 
-Adding source metadata to HTTP traffic metrics would enable improvements in the
-Linkerd Grafana dashboard, 3rd party tools that consume Linkerd's Prometheus
-metrics, the controller's StatSummary API, and consequently the `linkerd stat`
-CLI command and Linkerd dashboard.  These improvements are out of the scope of
-this proposal.
+If the `outbound` field is set to `none` then metrics are measured on the
+server-side of the `selector` resource.  However, if the `outbound` field is
+set to `to_resource` then the metrics are measured on the client-side of the
+`selector` resource.  Finally, if the `outbound` field is set to `from_resource`
+then the metrics are measured on the client-side of the `from_resource`.
+
+This API is confusing for a few reasons:
+
+* Some types of queries are measured on the server-side while others are
+  measured on the client-side.
+* Some types of queries are measured from the `selector` resource while others
+  are not.
+
+More importantly, some types of queries are not possible: it is not possible to
+query for resource-to-resource traffic measured on the server-side.  This
+limitation is significant because it means that is it is impossible to compare
+client-side to server-side metrics for this type of traffic to identify network
+introduced latency or errors.
 
 # Design proposal (Step 2)
 
 [design-proposal]: #design-proposal
+
+We will change the semantics of the StatSummary API to behave in a more
+predictable and consistent way.  Specifically, we will rename the `outbound`
+field to `edge` and change the semantics to be that traffic is always measured
+at the `selector` resource.  This means that when `edge` is set to `none`,
+traffic will be measured on the server-side of the selector resource (no change
+from today's behavior), when `edge` is set to `to_resource`, traffic is measured
+on the client-side of the `selector` resource (no change from today's behavior),
+and when `edge` is set to `from_resource`, traffic is measured on the
+server-side of the `selector` resource.
+
+An alternative to modifying the semantics of the StatSummary API is to create a
+new metrics API that would eventually replace StatSummary.  This has the added
+benefit of giving us the opportunity to simplify this API by allowing us to
+drop support for features which are not core to traffic metrics such as meshed
+pod count, as well as moving traffic split metrics into its own command.  This
+approach may also avoid unpredictable behavior when using mismatched CLI and
+control plane versions.  However, building a new API would require a larger
+effort than tweaking the existing one.
+
+In order to satisfy the new semantics, our Prometheus data must be rich enough
+to be able to select traffic metrics from specific sources when measuring on
+the server (inbound) side.  The inbound proxy does not attach any label to its
+metrics that allow selection by traffic source.  This is because it simply has
+no knowledge of the source resource. It knows the peer socket address of the
+source, but has no mechanism to convert that address into a Kubernetes resource
+name or type. This is in contrast to the `dst_X` metadata which the proxy gets
+from the Destination controller when doing service discovery look-ups.  We will
+add a corresponding `src_X` label that identifies the source resource.
 
 We will use the [Downward
 API](https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#the-downward-api)
@@ -141,7 +177,8 @@ request_total{
 ```
 
 The details of how the source labels will be shared between the source outbound
-proxy and the destination inbound proxy are out-of-scope of this RFC.
+proxy and the destination inbound proxy are out-of-scope of this RFC but are
+discussed in the [Context Sharing RFC](https://github.com/linkerd/rfc/pull/20).
 
 Note that all of the changes described here are additive to the existing
 Prometheus labels and would not introduce any backwards incompatibility.
@@ -152,8 +189,6 @@ the cardinality of the inbound metrics to the same as the outbound metrics.
 
 Note also that this implementation means that source metadata will NOT be
 available when the source resource is not meshed.
-
-There are no known blockers or prerequisites before this work can be started.
 
 # Prior art
 
@@ -183,11 +218,11 @@ we can avoid doing this work for each request.
 
 [unresolved-questions]: #unresolved-questions
 
-The details of how to share source metadata will be discussed in another RFC.
+The details of how to share source metadata will be discussed in 
+[another RFC](https://github.com/linkerd/rfc/pull/20).
 
 # Future possibilities
 
 [future-possibilities]: #future-possibilities
 
-Make use of these new metrics in the Grafana dashboards, StatSummary API, Linkerd
-CLI and Linkerd dashboard.
+Make use of this new metrics API in the Linkerd CLI and dashboard.
