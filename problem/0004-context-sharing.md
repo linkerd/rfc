@@ -29,8 +29,10 @@ request.  This means that information which is known only to one of the proxies
 is not available to the other.  For example, the source proxy knows certain
 Kubernetes metadata about itself such as the name of the pod and pod owner that
 it is running in, but this source metadata is not available to the destination
-proxy.  Another example is the destination proxy does not know what protocol
-the source proxy detected for the traffic.
+proxy.  This would facilitate the addition of source metadata on server metrics
+as described in [RFC #3](https://github.com/linkerd/rfc/pull/15).  Another
+example is the destination proxy does not know what protocol the source proxy
+detected for the traffic.
 
 [^1]: Certain metadata about HTTP requests such as the canonical destination is
 communicated between proxies via special `l5d-` prefixed HTTP headers which are
