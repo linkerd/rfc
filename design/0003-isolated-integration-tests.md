@@ -123,6 +123,10 @@ Second, the environment setup check must be run before each integration test.
 This is automatic in the self-contained script, but is a required manual step
 for running a specific one.
 
+It will be important to document how developers can run all or one of the
+tests, so providing clear instructions in the Test markdown file, as well as a
+`--help` flag for the scripts will be included.
+
 Before: Running all tests:
 
 ```
@@ -153,6 +157,10 @@ $ bin/deep-tests $PWD/target/cli/darwin/linkerd
 
 Tests will no longer be isolated by namespace. Each will require its own
 cluster so that it can require specific initial state.
+
+This will be the default behavior, but can be configured with a
+`--skip-cluster` flag that changes the behavior back to creating namespaces
+for each test.
 
 Currently, the existing tests all assume the same initial state. With each
 test running within its own cluster, deleting the cluster is all that is
