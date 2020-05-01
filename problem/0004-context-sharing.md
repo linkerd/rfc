@@ -45,6 +45,10 @@ that:
 * the destination proxy can avoid duplicating work already performed by the
   source proxy such as protocol detection
 
+Furthermore, this mechanism should be available regardless of protocol.  That is,
+it should work for HTTP traffic, TCP traffic, and any other protocol that is
+added in the future.
+
 # Design proposal (Step 2)
 
 [design-proposal]: #design-proposal
