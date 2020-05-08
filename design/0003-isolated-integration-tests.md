@@ -167,6 +167,11 @@ test running within its own cluster, deleting the cluster is all that is
 required for the cleanup step. This guarantees no previous test leaves behind
 resources for future tests.
 
+If there are Linkerd resources in the namespace or cluster, the test will
+abort and not attempt to delete those resources. This is different from the
+current behavior where resources are immediately deleted; this can be a
+surprising effect if ran on in a context where there is an existing install.
+
 Only the scripting component of the integration test suite will need to change
 to support this. The scripting component is located in the `_test-run.sh` file
 and contains all the existing integration tests. Each test is a combination of
