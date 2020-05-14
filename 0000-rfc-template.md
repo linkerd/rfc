@@ -1,3 +1,5 @@
+# Title
+
 - Contribution Name: (fill me in with a unique ident, `my_awesome_feature`)
 - Implementation Owner: (fill in with who is doing the implementation)
 - Start Date: (fill me in with today's date, YYYY-MM-DD)
@@ -6,13 +8,13 @@
 - Linkerd Issue: [linkerd/linkerd2#0000](https://github.com/linkerd/linkerd2/issues/0000)
 - Reviewers: (Who should review the code deliverable? ex.@olix0r)
 
-# Summary
+## Summary
 
 [summary]: #summary
 
 One paragraph explanation of the proposed contribution.
 
-# Problem Statement (Step 1)
+## Problem Statement (Step 1)
 
 [problem-statement]: #problem-statement
 
@@ -22,7 +24,7 @@ One paragraph explanation of the proposed contribution.
 
 Please avoid discussing your proposed solution.
 
-# Design proposal (Step 2)
+## Design proposal (Step 2)
 
 [design-proposal]: #design-proposal
 
@@ -39,7 +41,7 @@ This is the technical portion of the RFC. Explain the design in sufficient detai
 - Non-Goals
 - Deliverables
 
-# Prior art
+### Prior art
 
 [prior-art]: #prior-art
 
@@ -56,13 +58,13 @@ software, provide readers of your RFC with a fuller picture. If there is no prio
 fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from
 other software.
 
-# Unresolved questions
+### Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
 - What parts of the design do you expect to resolve through the RFC process before this gets merged?
 
-# Future possibilities
+### Future possibilities
 
 [future-possibilities]: #future-possibilities
 
