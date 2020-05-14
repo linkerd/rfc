@@ -18,7 +18,7 @@ provide mutually-validated TLS (mTLS) connections between meshed endpoints. This
 validation will serve as the basis for auditing and policy functionality.
 
 Today, mTLS is only applied on HTTP connections. This RFC will provide a plan to provide
-ubuitous, automatic, transparent mTLS for all meshed traffic, regardless of protocol.
+ubuiquitous, automatic, transparent mTLS for all meshed traffic, regardless of protocol.
 
 ### Goals
 
@@ -28,79 +28,43 @@ ubuitous, automatic, transparent mTLS for all meshed traffic, regardless of prot
 
 ### Non-Goals
 
-* Implement authorization policies
-* Provide auditability guarantees
+- Implement authorization policies
+- Provide auditability guarantees
+
+## Design Proposal
 
 [design-proposal]: #design-proposal
 
-<!-- TODO/SKETCH -->
-
 ### Outbound Proxy
 
-- For outbound connections where the protocol could not be detected as HTTP:
-  - Maintain a fewest-connections load balancer for each unique IP:PORT
-  - Endpoints provided by resolving IP:PORT via the Destination controller.
-    - Endpoint metadata includes peer identity, as per HTTP resolution.
-  - If protocol detection was disabled via configuration (i.e. because the connection is
-    server-speaks-first), a hint must be forwarded to the inbound proxy so that it can bypass
+No changes are needed to the inbound proxy. We continue to terminate mTLS on
+all inbound traffic regardless of the overlying protocol.
 
-#### Client-speaks-first protocols
+On the outbound side, however, we accommodate services with comprising pods
+of multiple identities. So we cannot continue to forward traffic to
+`ClusterIPs`. This requires introducing a [TCP load balancer][tcplb] so that
+we have an efficient strategy to distribute connections over endpoints.
 
-#### `LoadBalancer` IPs
+#### Discovery
 
-### Inbound Proxy
+The control plane's _Destination.Get_ endpoint already supports resolving
+both `cluster-ip:port` and `pod-ip:port` addresses to a balancer endpoint
+(with metadata and identity).
 
-### Destination Controller
+The outbound proxy provides a p2c/fewest-connections load balancer to
+distribute connections over `ClusterIp` service endpoints.
 
-- Support a `Service` annotation that denotes a list of server-speaks-first ports.
+#### Metrics
 
-### Proxy Injection Controller
+Metrics for these connections should include per-endpoint metric labels, as
+addressed by the Metrics API proposal.
 
-<!--
+#### Server-Speaks-First Protocols
 
-**Note**: This should be completed as part of `Step 2`.
+Another open proposal outlines support for service-speaks-first-protocols.
+This other proposal should influence the implementation of discovery in this
+proposal.
 
-This is the technical portion of the RFC. Explain the design in sufficient detail that:
+### Diagnostic Tools
 
-- Its interaction with other features is clear
-- It is reasonably clear how the contribution would be implemented
-- Corner cases are dissected by example
-- Dependencies on libraries, tools, projects or work that isn't yet complete
-- Use Cases
-- Goals
-- Non-Goals
-- Deliverables
-
-# Unresolved questions
-
-[unresolved-questions]: #unresolved-questions
-
-transparent
-
-- What parts of the design do you expect to resolve through the RFC process before this gets merged?
-
-# Prior art
-
-[prior-art]: #prior-art
-
-Discuss prior art, both the good and the bad, in relation to this proposal.
-A few examples of what this can include are:
-
-- Does this functionality exist in other software and what experience has their community had?
-- For other teams: What lessons can we learn from what other communities have done here?
-- Papers: Are there any published papers or great posts that discuss this? If you have some
-  relevant papers to refer to, this can serve as a more detailed theoretical background.
-
-This section is intended to encourage you as an author to think about the lessons from other
-software, provide readers of your RFC with a fuller picture. If there is no prior art, that is
-fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from
-other software.
-
-
-# Future possibilities
-
-[future-possibilities]: #future-possibilities
-
-This is also a good place to "dump ideas", if they are out of scope for the RFC you are writing but otherwise related.
-
-  -->
+TODO
