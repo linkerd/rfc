@@ -31,7 +31,7 @@ available.
 
 [problem-statement]: #problem-statement
 
-### What problem are you trying to solve?
+### What problem are you trying to solve
 
 Users should be able to get the benefit of lower level protocols (L4) when
 Linkerd is unable to detect the higher level protocol (L7). This allows users to
@@ -176,9 +176,10 @@ spec:
   for placing `appProtocol` on `Service` and `Endpoints`.
 - [KEP](https://github.com/kubernetes/enhancements/blob/master/keps/sig-network/20190603-EndpointSlice-API.md)
   for `EndpointSlice`.
-- [Manual Selection](https://istio.io/docs/ops/configuration/traffic-management/protocol-selection/)
-  is how Istio started doing it. They have since started doing
-  [protocol detection](https://istio.io/docs/ops/configuration/traffic-management/protocol-selection/#automatic-protocol-selection).
+- [Manual
+  Selection](https://istio.io/docs/ops/configuration/traffic-management/protocol-selection/)
+  is how Istio started doing it. They have since started doing [protocol
+  detection](https://istio.io/docs/ops/configuration/traffic-management/protocol-selection/#automatic-protocol-selection).
 
 ### Unresolved questions
 
