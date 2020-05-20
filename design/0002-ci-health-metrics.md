@@ -1,3 +1,5 @@
+# CI Health Metrics
+
 - Contribution Name: ci-health-metrics
 - Implementation Owner: @alpeb, @kleimkuhler
 - Start Date: 2020-03-16
@@ -7,14 +9,14 @@
   [linkerd/linkerd2#4176](https://github.com/linkerd/linkerd2/issues/4176)
 - Reviewers: @grampelberg
 
-# Summary
+## Summary
 
 [summary]: #summary
 
 This RFC proposes a service that would monitor the results from each CI run. It
 should allow us to catch consistently flaky tests.
 
-# Problem Statement (Step 1)
+## Problem Statement (Step 1)
 
 [problem-statement]: #problem-statement
 
@@ -32,13 +34,13 @@ currently are only available through Github's UI. With access to that data in
 the appropriate format, we'll then be able to determine how to persist and
 present it to operators.
 
-# Design proposal (Step 2)
+## Design proposal (Step 2)
 
-## Exposing the errors
+### Exposing the errors
 
 There are two ways to expose CI run failures: annotations and artifacts.
 
-### Annotations
+#### Annotations
 
 Annotations are created whenever an error message from any of the CI steps is
 sent to stdout/stderr using the appropriate format, described
@@ -48,7 +50,7 @@ error messages aren't following that format, and the summary page only shows
 something like "Process completed with exit code 1." whenever a job fails.
 Annotations are surfaced through Github's Checks API.
 
-### Artifacts
+#### Artifacts
 
 Instead of conforming to Github's annotation format, we could use a more
 standard format such as xUnit XML reports. That would imply building some
@@ -64,7 +66,7 @@ annotations route.
 (Although do raise your voice if you find an appropriate tool for xUnit
 reports!)
 
-## Formatting
+### Formatting
 
 We have integration tests and checks written in Go, Javascript and Bash. Each of
 those environments would require changing how they report errors to properly
@@ -72,15 +74,16 @@ format them as explained above.
 
 For example Go test failures would need to be modified like so:
 
-```
+```go
 go fail(t, "linkerd upgrade config command failed", "linkerd upgrade config command failed\n%s\n%s", out, stderr)
 ```
 
 Where `fail` would output a string like
 
-```
+```bash
 ::error file=upgrade_test.go,line=103::linkerd upgrade config command failed
 ```
+
 that is interpreted by Github as an annotation. That function would also make
 the original `t.Fail("linkerd upgrade config command failed\n%s\n%s", out,
 stderr)` call to report the to Go's testing framework.
@@ -88,7 +91,7 @@ stderr)` call to report the to Go's testing framework.
 Note that the annotation will just contain the generic error message (no
 details) as we'd like to aggregate the number of appearances of such messages.
 
-## Available Data
+### Available Data
 
 Once the error information is exposed, these are the pieces of data available
 for each CI run:
@@ -97,7 +100,7 @@ for each CI run:
 - Check Run ID
 - Workflow name
 - Job name
-- Completion status 
+- Completion status
 - Start timestamp
 - Finish timestamp
 - Test/Check name
@@ -106,7 +109,7 @@ for each CI run:
 
 Which are retrieved using the following Github API calls:
 
-```
+```txt
 # This gives us a list of check suite IDs:
 GET /repos/linkerd/linkerd2/actions/runs
 
@@ -123,7 +126,7 @@ GET https://api.github.com/repos/linkerd/linkerd2/actions/workflows/:workflow_id
 GET repos/linkerd/linkerd2/check-runs/:check_run_id/annotations
 ```
 
-## New Workflow for Reports
+### New Workflow for Reports
 
 After each CI run finishes, a new Github Actions event would be dispatched that
 should be caught by a new, separate workflow whose sole responsibility is to
@@ -131,14 +134,14 @@ build a report.
 
 That workflow will first fetch the data described above. While data is available
 for approximately 3 months back, we're only interested in the data for the last
-  month. We have the option to fetch and process all the data upon each workflow
-  run, which will alleviate us from dealing with any kind of state.
-  Alternatively, we could only fetch data since the last time the workflow run,
-  add the data to some cloud DB service, and then query that store to retrieve
-  last month's data. As a first approach, and given the small amount of data we
-  have to deal with, let's fetch all the data each time see how that performs.
+month. We have the option to fetch and process all the data upon each workflow
+run, which will alleviate us from dealing with any kind of state. Alternatively,
+we could only fetch data since the last time the workflow run, add the data to
+some cloud DB service, and then query that store to retrieve last month's data.
+As a first approach, and given the small amount of data we have to deal with,
+let's fetch all the data each time see how that performs.
 
-## Reports
+### Reports
 
 The reports would consist in tables and their corresponding charts for the
 following data:
@@ -155,12 +158,12 @@ The final report can be an HTML page containing the tables and pointing to chart
 files generated  with a library like [chart](https://github.com/vdobler/chart),
 all stored as workflow artifacts.
 
-# Prior art
+### Prior art
 
 [prior-art]: #prior-art
 
-Github's Checks API have only until recently become beta, so it's
-expected there aren't well known tools that leverage that information.
+Github's Checks API have only until recently become beta, so it's expected there
+aren't well known tools that leverage that information.
 
 I did find the [BuildPulse](https://github.com/marketplace/buildpulse/) Github
 App, that specializes on tracking flaky tests in Github Actions. I couldn't make
@@ -169,7 +172,7 @@ described in Phase 1 above for it to properly give us actionable data instead of
 data about the generic error messages we currently have. BuildPulse is closed
 source and a paid service.
 
-# Future possibilities
+### Future possibilities
 
 [future-possibilities]: #future-possibilities
 
