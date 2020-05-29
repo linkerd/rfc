@@ -378,7 +378,7 @@ of Kubernetes and its cluster configuration.
 This section includes write ups regarding testing methodologies for some
 primary features:
 
-#### 1. Automatic Proxy Injection
+#### [1. Automatic Proxy Injection](#proxy-injection)
 
 Proxy injection process works by adding a `linkerd.io/inject: enabled`
 annotation to pod template / namespace. This triggers an admission
@@ -418,7 +418,7 @@ duration, after which the test shall fail.
 - Ensure that the pods no longer have the `linkerd-init` and
 `linkerd-proxy` containers.
   
-#### 2. `tap` extension API server
+#### [2. `tap` extension API server](#tap-api-server)
 
 Some custom Kubernetes clusters don't always have the aggregation
 layer configured, causing the tap service which is an extension API
@@ -431,7 +431,7 @@ check with description
 `"can read extension-apiserver-authentication configmap"`
 under category `"pre-kubernetes-setup"` says `"success"`
 
-#### 3. Essential linkerd commands
+#### [3. Essential linkerd commands](#linkerd-cmds)
 
 #### linkerd tap cmd
 
@@ -526,7 +526,7 @@ displayed - such as the output of attempting to fetch an external IP,
 or the output of `cURL`. Further, users shall be allowed to not have
 these resources destroyed on test failure.
 
-#### 5. Data plane proxy health checks
+#### [5. Data plane proxy health checks](#data-plane-checks)
 
 - Issue a `check` command - `linkerd -n <ns> check --proxy -o json`
 - From the output JSON, under `"categoryName" : "linkerd-data-plane"`,
@@ -536,7 +536,7 @@ at the `/metrics` (Liveness probe) and `/ready` (Readiness probes) to
 ensure that they are reachable.
 - From the `linkerd-proxy` container of each of the pods, check for 503 errors.
 
-#### 6. Retries and Timeouts
+#### [6. Retries and Timeouts](#retries-timeouts)
 
 - Some of the code from the existing integration tests may be reused for
 this section. In particular, we're looking for
@@ -600,7 +600,7 @@ way of validating timeouts.
 This way, users shall be allowed to monitor the occurences of
 retries and timeouts.  
 
-#### 7. Distributed Tracing (optional)
+#### [7. Distributed Tracing (optional)](#tracing)
 
 Currently there exist some integration tests for _Distributed tracing_.
 Applications meshed with Linkerd can be easily tested for this by
@@ -608,7 +608,7 @@ making a `GET` request on the Jaeger backend at `/api/traces`
 endpoint on port 16686. (lookback and service parameters shall
 be made configurable via CLI flags)
 
-#### 8. Canary Release (optional)
+#### [8. Canary Release (optional)](#canary)
 
 Once a Canary Release is configured, an updated may be triggered.
 The metrics from the `stat` cmd may be verified to ensure that this
@@ -620,7 +620,7 @@ It is important to note that these tests could fail if the
 `workloadNamespace` property of the test config is set to anything
 other than the default (moviechat/emojivoto) application.
 
-#### 1. gRPC Streaming
+#### [1. gRPC Streaming](#streaming)
 
 The movie chat application / emojivoto shall leverage gRPC streaming.
 It is essential to ensure that streaming services are not affected by
@@ -635,7 +635,7 @@ field of the JSON output, which ideally should be 1.00 (or 100%).
 The logs gathered by Sonobuoy may also show metrics such as `rps`
 and the different latencies.
 
-#### 2. Websockets
+#### [2. Websockets](#websockets)
 
 Similar to gRPC streaming, it is essential to check if Linkerd does not
 break services that utilise websocket connections. In our sample application,
@@ -656,7 +656,7 @@ This command would return a response from the websocket server from the
 Further, similar to gRPC testing, `linkerd stat` shall be used to check
 if there is constant traffic to and from the websocket endpoints.
 
-#### 3. MySQL and Redis
+#### [3. MySQL and Redis](#mysql-redis)
 
 - The emojivoto application shall be modified to have persistent storage.
 The `voting` deployment may be configured to work with MySQL and Redis (for cache).
