@@ -12,11 +12,7 @@
 
 This document describes the design of the next phase of the multicluster work
 which will allow source clusters to control which services they import and
-generally simplify some of the machinery and anotation surface area.  This
-document actually describes 3 independant proposals.  These proposals are not
-mutually exclusive and we are free to implement some, all, or none of them.
-
-# Propsal 1: Service Selctors
+generally simplify some of the machinery and anotation surface area.
 
 # Problem Statement (Step 1)
 
@@ -44,7 +40,7 @@ I propose the following changes:
   number of gateways and each of these has the ability to route to any service
   on the cluster because of the sharing of trust roots.
 * The following annotations are no longer needed on the gateway service because
-  they will be moved to a config file:
+  they will be moved to a custom resource:
   * mirror.linkerd.io/gateway-identity
   * mirror.linkerd.io/multicluster-gateway
   * mirror.linkerd.io/probe-path
@@ -53,18 +49,19 @@ I propose the following changes:
 * The `linkerd multicluster install` command no longer installs the service
   mirror controler and instead just installs the components necessary for being
   a target cluster (gateway and service account).
+  * It will also install the `link.multicluster.linkerd.io` CRD (see below).
 * The `linkerd multicluster link` command will now output the following
   resources:
   * The cluster-credentials secret.  This secret will continue to hold the
     kubeconfig file for access to the target cluster's API.  However, we can
     eliminate the following annotations from the secret since we will be moving
-    this configuration into a configmap:
+    this configuration into a custom resource:
     * mirror.linkerd.io/cluster-name
     * mirror.linkerd.io/remote-cluster-domain
     * mirror.linkerd.io/remote-cluster-l5d-ns
-  * A service-mirror-config ConfigMap.  This ConfigMap will control how the
-    service mirror controller operates.  The ConfigMap will contain a config
-    file with the following fields:
+  * A `link` custom resource.  This `link` will control how the
+    service mirror controller operates.  The resource will contain a the
+    following fields:
     * target-cluster-name: the name to use for the remote cluster.  this will be
       appended to all mirror services names and to the gateway mirror name.
     * target-cluster-domain: the cluster domain of the target cluster.  this
@@ -82,15 +79,15 @@ I propose the following changes:
       services from the target cluster to mirror.
   * The service mirror controller deployment.  This service mirror controller
     container's args will be populated with the name of the service mirror
-    config ConfigMap.
+    `link` resource.
 
 The biggest consequence of the above changes is that we now run one service
 mirror controller for each linked target cluster.  This allows to eliminate
 the watching of secrets and dynamically creating service watchers.  When the
-service mirror controller starts up, it reads the provided configmap, loads
-the secret specified in the configmap, and then gets to work mirroring services
-from the target cluster which match the given selectors.  If the configmap is
-updated, the service mirror controller will reload its config.
+service mirror controller starts up, it reads the provided `link` resource, loads
+the secret specified in the `link`, and then gets to work mirroring services
+from the target cluster which match the given selectors.  If the `link` is
+updated, the service mirror controller will reload its configuration.
 
 The primary benefit of this approach is that it solves [#4481](https://github.com/linkerd/linkerd2/issues/4481)
 by allowing the source cluster to select the servies that it wants to mirror.
@@ -98,18 +95,18 @@ It also has many secondary benefits:
 * It simplifies the relationship between components by eliminating the coupling
   between exported services and the gateway.
 * It centralizes and makes explicit much of the configuration by moving it from
-  disparate annotations into a single config file.
+  disparate annotations into a single `link` resource.
 * It solves [#4495](https://github.com/linkerd/linkerd2/issues/4495) because
   gateways are no longer defined in terms of exported services
 * It solves [#4521](https://github.com/linkerd/linkerd2/issues/4521) by
   getting rid of all of the annotations in the target cluster
 * It solves [#4584](https://github.com/linkerd/linkerd2/issues/4584) since users
   will be able to manually configure things like the gateway address in the 
-  config file.
+  `link` resource.
 
 It's worth noting that all of the above could be achieved with a single service
-mirror controller in the source cluster that detects any service mirror config
-configmaps which are created and does the mirroring for all linked clusters.
+mirror controller in the source cluster that detects any `link` reousrces which
+are created and does the mirroring for all linked clusters.
 However, I think splitting the service mirror controller up so that a separate
 instance handles each target cluster has some compelling benefits:
 * More fine grained operational control: operators can bounce, upgrade, disable,
@@ -137,24 +134,16 @@ The downsides of this approach are that:
 
 This proposal makes very few changes to the UX flow.
 
-It is no longer necessary to install the multicluster addon in the source
-cluster.  However, users may still want to do so for symmetry or if they
-anticiapte that the source cluster might also be used as a target cluster.
 
-Install the multicluster gateway and service account in the target cluster.
+Install the multicluster gateway, service account, and `link` CRD in both clusters.
 
 ```
 linkerd --context=target multicluster install | kubectl --context=target apply -f -
-```
-
-(Optional) Intsall the multicluster gateway and service account in the source cluster.
-
-```
 linkerd --context=source multicluster install | kubectl --context=source apply -f -
 ```
 
-Link the clusters.  This will install the cluster credentails secret, service
-mirror config, and service mirror controller in the source cluster.
+Link the clusters.  This will install the cluster credentails secret, `link`
+reousrce, and service mirror controller in the source cluster.
 
 ```
 linkerd --context=target multicluster link --cluster-name=foobar | kubectl --context=source apply -f -
@@ -162,11 +151,12 @@ linkerd --context=target multicluster link --cluster-name=foobar | kubectl --con
 
 This will create:
 * secret/cluster-credentials-foobar
-* configmap/service-mirror-config-foobar
+* link.multicluster.linkerd.io/foobar
 * deployment/service-mirror-foobar
 * (also the necessary RBAC for the service mirror controller)
 
-The generated configmap will specify the default label selector of `multicluster.linkerd.io/exported=true`.
+The generated `link` resource will specify the default label selector of
+`multicluster.linkerd.io/exported=true`.
 Alternatively, users can specify their own label selector:
 
 ```
@@ -184,6 +174,18 @@ see that a service in the remote cluster matches its label selector and will
 mirror that service by creating a `my-cool-svc-foobar` mirror service in the
 source cluster.
 
+Active links can be seen using `kubectl get`.  This replaces the `multicluster gateways` command:
+
+
+```
+kubectl --context=source get links
+NAME   NUM SVC   ALIVE   LATENCY_P50   LATENCY_P95   LATENCY_P99
+foobar       3    True         275ms         385ms         397ms
+```
+
+
+## Upgrading
+
 To upgrade the service mirror controller, simply run the link step again with a
 newer version of the CLI:
 
@@ -199,34 +201,62 @@ manifests for all of them:
 linkerd --context=source multicluster upgrade | kubectl --context=source apply -f -
 ```
 
-# Proposal 2: Endpointless Mirror Services
+## Unlinking
 
-TODO: flesh this out more
+To unlink a target cluster, we add an `unlink` command which outputs manifests
+for the `link` resource, the service mirror controller deployment, the cluster
+credentials, and all of the mirror services and gateway mirror for the given
+target cluster.  These can be piped to `kubectl delete`.
 
-* The target cluster gateway address is used in the Endpoints object for all
-  mirror services for a particular gateway and in the Endpoints object for the
-  gateway mirror.  Any time the gateway address changes, all of these objects
-  must be updated.
-* If we treated mirror services as a special case in the destination controller,
-  we could have the destination controller return the gateway address for
-  lookups against mirror services and not need to actually create or maintain
-  Endpoints objects.
+```
+linkerd --context=source multicluster unlink --cluster-name=foobar | kubectl delete -f -
+```
 
-# Proposal 3: Use External Names when Gateway Address is a Hostname
+(Open question: will this introduce a race condition where deleted mirror services
+could be re-created by the service mirror controller before it shuts down?  Should
+the service mirror controller instead watch for delete events of its `link` resource
+and react to that event by deleting all of its mirror services and then deleting
+its own deployment?  Is this too magical?)
 
-TODO: flesh this out more
+## Uninstalling
 
-* When the gateway address is a hostname, we have the service mirror controller
-  resolve the hostname (and periodically re-resolve it) and use the resolved
-  IP address in mirror services and the gateway mirror.
-* In order to move this DNS resolution into the proxy we could update the
-  destination proxy-api to allow destination lookups to return hostnames.
-* By making the gateway mirror service into an external name service, we could
-  use the gateway address hostname as the gateway mirror external name.  The
-  destination controller would then be able to return this hostname for queries
-  on the gateway mirror and the proxy would be responsible for resolving DNS.
-* If the mirror services were also external name services OR if they were
-  special cased endpointless services as described in proposal 2, then the
-  destination controller could also return the gateway address hostname for
-  queries on the mirror services and the proxy would be responsible for
-  resolving DNS.
+Uninstalling involves unlinking all target clusters and deleting all the resources
+created by `linkerd multicluster install`.
+
+```
+linkerd --context=source multicluster unlink --all-clusters | kubectl delete -f -
+linkerd --context=source multicluster install | kubectl delete -f -
+```
+
+(Open question: can the above two commands be combined into one `multicluster uninstall` command?)
+
+# Out of Scope and Future Work
+
+These items are out of scope because they do not provide a clear enough benefit
+or are lower priority than the work described above.
+
+* Treating mirror services as a special case in the destination controller:
+  * The destination controller could return the gateway address for lookups against mirror services
+  * This means we do not need to create or maintain Endpoints objects for
+    mirror services.
+  * This avoids needing to maintain redundant gateway information accross all
+    mirror services.
+  * See https://github.com/linkerd/linkerd2/issues/4535 for more
+* Use External Names when Gateway Address is a Hostname:
+  * When the gateway address is a hostname, we have the service mirror controller
+    resolve the hostname (and periodically re-resolve it) and use the resolved
+    IP address in mirror services and the gateway mirror.
+  * In order to move this DNS resolution into the proxy we could update the
+    destination proxy-api to allow destination lookups to return hostnames.
+  * By making the gateway mirror service into an external name service, we could
+    use the gateway address hostname as the gateway mirror external name.  The
+    destination controller would then be able to return this hostname for queries
+    on the gateway mirror and the proxy would be responsible for resolving DNS.
+  * If the mirror services were also external name services OR if they were
+    special cased endpointless services as described in proposal 2, then the
+    destination controller could also return the gateway address hostname for
+    queries on the mirror services and the proxy would be responsible for
+    resolving DNS.
+  * See https://github.com/linkerd/linkerd2/issues/4590 for more
+* More aggressive reconciliation:
+  * See https://github.com/linkerd/linkerd2/issues/4575 for more
