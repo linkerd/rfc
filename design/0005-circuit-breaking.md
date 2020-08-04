@@ -179,6 +179,24 @@ pair needs to be marked as ejected or if any instance has served ejection time
 and it's ready to be brought back online. In case it's consecutive ejection,
 increase ejectionTime according to `ejectionTimeInflation` settings.
 
+```txt
+Window based checking -
+
+0 . . . . 10 . . . . 20 . . . . 30
+
+|<------->|<-------->|<--------->|
+C         C          C           C  <- Background thread checking stats after
+                                       every x seconds and see if there's
+                                       need to circuit break.
+```
+
+Additional metrics we need to add:
+
+1. Currently we can't get metrics for last `x` seconds. They are stored as
+   global counters.
+2. We need to add metrics for consecutive failures.
+   [Ref](https://github.com/linkerd/linkerd2-proxy/blob/5264573433ceea37f9d66c9ca95c458a604350a0/linkerd/http-metrics/src/requests/mod.rs#L15-L46)
+
 ---
 
 Other than above mentioned details, here's the top level changes I could think
@@ -187,8 +205,8 @@ of with this approach -
 1. Updating ServiceProfile CRD and its validation.
 2. Updating destination service APIs to provide circuit breaking configuration
    to proxy instances.
-3. Using existing local telemetry to apply circuit breaking configuration in
-   proxy itself.
+3. Using local telemetry to apply circuit breaking configuration in proxy
+   itself.
 
 All diagrams are collectively available
 [here](https://drive.google.com/drive/folders/1wCwTwi6kUjHPsLRMPBasy3cnx5Gj6SSq?usp=sharing).
