@@ -52,8 +52,17 @@ Protocol Specific features -
    User can configure ejection based on many different metrics. These metrics
    would be calculated over a given time range.
    - Success Rate
+     - Usecase: Most intuitive and generalised circuit breaking policy based on
+       failure/success classification selected by user.
    - Percentile Latencies
+     - Usecase: Let's say we have a service for which we cannot configure
+       timeouts due to any reason. For example, few of the requests are expected
+       to take longer than others. In this case, we cannot have circuit breaking
+       on success rate. In these cases, we can rely on latency based circuit
+       breaking
    - Consecutive Failures
+     - Usecase: In case, there are lot of failing requests due to some issue, we
+       need to fail quickly instead of waiting for next time window evaluation
 2. For TCP based communication -
    [Example](https://drive.google.com/open?id=1yAAurygsZQ-r58TEA0QiFf9Sz15jqRJV)
 
