@@ -30,14 +30,6 @@ rather than getting just another expected failure.
 
 ---
 
-Users should also be able to set max-ejection-percentage which provides max
-number of service instances which can be removed from the load balancing for
-specific service.
-
-[Example](https://drive.google.com/open?id=1jSMaogdvzxjv0v2dBoL7OYGHmsCusXn-)
-
----
-
 Network Parition - There can be lot of scenarios in network partition but here
 I'm providing a glimpse how circuit breaking would behave in case of network
 issue.
@@ -114,10 +106,6 @@ routes:
       # Circuit Breaker Kind
       # (Required)
       kind: ...
-
-      # Max percentage of instances that can be ejected.
-      # Default - 100%
-      maxEjectionPercentage: 10
 
       # The min duration of time in seconds for which an instance is marked
       # as ejected.
@@ -243,6 +231,11 @@ supports both cluster-wide as well as per-proxy outlier detectors.
    transport and network layers errors for now. That means any connection errors
    would be won't be triggering the circuit breaking. We can revisit the same in
    future.
+2. Users should also be able to set max-ejection-percentage which provides max
+   number of service instances which can be removed from the load balancing for
+   specific service. Since I don't have a good usecase in my mind, I'll keeping
+   it out of scope for now.
+   [Example](https://drive.google.com/open?id=1jSMaogdvzxjv0v2dBoL7OYGHmsCusXn-)
 
 ### Unresolved questions
 
