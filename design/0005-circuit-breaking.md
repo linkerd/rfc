@@ -30,13 +30,6 @@ rather than getting just another expected failure.
 
 ---
 
-It would also be somewhat helpful in case of canary deployments when there's
-some regression and new build is raising failures.
-
-[Example](https://drive.google.com/open?id=1FxKi-egyhHumCvlHvTI4P114z7qOLPeN)
-
----
-
 Users should also be able to set max-ejection-percentage which provides max
 number of service instances which can be removed from the load balancing for
 specific service.
