@@ -38,9 +38,14 @@ specific service.
 
 ---
 
-Network Parition - There can be lot of scenarios in network partition but to
-provide a glimpse how circuit breaking would behave in case of network issue -
+Network Parition - There can be lot of scenarios in network partition but here
+I'm providing a glimpse how circuit breaking would behave in case of network
+issue.
+
 [Example](https://drive.google.com/open?id=154I2ZGlGc-rQJ0YVeek17dJy7raAvd-G)
+
+We won't be handling any errors in the network layer. Please check
+[out-of-scope section](#out-of-scope) for more details.
 
 ---
 
@@ -63,7 +68,9 @@ Protocol Specific features -
    - Consecutive Failures
      - Usecase: In case, there are lot of failing requests due to some issue, we
        need to fail quickly instead of waiting for next time window evaluation
-2. For TCP based communication -
+2. For TCP based communication (We won't be handling TCP related errors in the
+   implementation, please check [out-of-scope section](#out-of-scope) for more
+   details -
    [Example](https://drive.google.com/open?id=1yAAurygsZQ-r58TEA0QiFf9Sz15jqRJV)
 
 ---
@@ -86,9 +93,6 @@ current architecture, I feel it's best to provide circuit breaking functionality
 through service profiles. That means it would be limited to above two kind of
 services as of now. Circuit breaking logic would be applied in the data plane
 based on the metrics recorded inside the proxy.
-
-Since circuit breaking needs to be handled per protocol, we will leave TCP for
-now and can revisit the same in future.
 
 In future, for any other protocol support for circuit breaking, one will first
 need to incorporate the protocol into ServiceProfile itself and then implement
@@ -230,6 +234,15 @@ of circuit breaking. In
 they use two terms - "Circuit Breaking" and "Outlier Detection", which I feel
 seems inter-related upto some extent and can be merged into single. Envoy
 supports both cluster-wide as well as per-proxy outlier detectors.
+
+### Out of Scope
+
+[out-of-scope]: #out-of-scope
+
+1. Since circuit breaking needs to be handled per protocol, we will leave
+   transport and network layers errors for now. That means any connection errors
+   would be won't be triggering the circuit breaking. We can revisit the same in
+   future.
 
 ### Unresolved questions
 
