@@ -53,7 +53,6 @@ Protocol Specific features -
    would be calculated over a given time range.
    - Success Rate
    - Percentile Latencies
-   - Max Requests
    - Consecutive Failures
 2. For TCP based communication -
    [Example](https://drive.google.com/open?id=1yAAurygsZQ-r58TEA0QiFf9Sz15jqRJV)
@@ -126,12 +125,6 @@ kind: successRate
 # (Required)
 timeWindow: 15
 successRate: 99
-```
-
-```yaml
-kind: maxRequests
-timeWindow: 15
-maxRequests: 10000
 ```
 
 ```yaml
