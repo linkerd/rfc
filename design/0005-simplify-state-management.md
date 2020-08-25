@@ -16,7 +16,7 @@
 Currently, Linkerd state in the `linkerd-config` ConfigMap as flags parsed from `installOptions`.
 This has become counter intuitive after we added Helm support as `Values` struct
 became our main source of truth (for rendering, etc), and causing back and forth
-conversions between `installOptions` and `Values`. This PR aims to remove the
+conversions between `installOptions` and `Values`. This RFC aims to remove the
 unnecessary complexity in managing state and simplify things.
 
 ## Problem Statement (Step 1)
@@ -25,12 +25,12 @@ Currently, `linkerd-config` configMap is not only used for upgrades but also by
 multiple components like Proxy Injector, CLI, etc to understand the current
 cluster/linkerd state. This has the following problems:
 
+- Lots of code debt/confusion to support the conversions between `installOptions`
+and `Values`.
 - As `Values` is not the source of truth, hacks [had to be/being](https://github.com/linkerd/linkerd2/pull/4864#pullrequestreview-467046753)
 [made](https://github.com/linkerd/linkerd2/pull/4569) to make state (outside of
-flags, etc) be stored for helm in some manner for Linkerd check.
+flags, etc) to be stored and retrieved.
 - No clear definition on which components use what configurations.
-- Lots of code debt/confusion to support the above use-cases while working
-similarly with Helm on the UX.
 
 ## Design proposal (Step 2)
 
@@ -44,16 +44,19 @@ depend on this secret to understand the cluster state.
 
 ### For Linkerd
 
-This new overridden values struct contains the details directly from the
-`installOptions` passed through the CLI flags, and will be overridden.
+For Linkerd state, There will be a new secret which contains overridden values
+which is a direct marshal of `Values` struct created from the `installOptions`
+passed through CLI flags. This `valuesOverride` will also contain any extra configuration
+created by the CLI i.e keys, etc other than the fields from `values.yaml`.
 
 Currently, `linkerd-config` is used by most components to know cluster
 configuration(like `cluster-domain`, etc) and components like proxy-injector
-needing a lot more. As the current `linkerd-config` will be removed,
+need a lot more. As the current `linkerd-config` will be removed,
 This information has to be passed to the components through flags.
 (flags are chosen over configMap, so that we don't fall into the trap of having
-more configuration places). This makes each component get its configuration fully
-during the install/upgrade time through flags, without relying on external structures.
+more configuration resources/places). This makes each component get its configuration
+fully during the install/upgrade time through flags, without relying on external
+structures.
 
 #### Required Components Configuration
 
