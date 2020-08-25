@@ -48,6 +48,12 @@ For Linkerd state, There will be a new secret which contains overridden values
 which is a direct marshal of `Values` struct created from the `installOptions`
 passed through CLI flags. This `valuesOverride` will also contain any extra configuration
 created by the CLI i.e keys, etc other than the fields from `values.yaml`.
+This new secret will be pure yaml, unlike the json and protobuf strings we have currently,
+as it's probably not worth the extra conversions.
+
+This new configuration secret will only be accessible from the CLI, and access won't
+be granted to any service account, except perhaps `linkerd-web` in order
+to perform linkerd check in the dashboard.
 
 Currently, `linkerd-config` is used by most components to know cluster
 configuration(like `cluster-domain`, etc) and components like proxy-injector
@@ -56,7 +62,8 @@ This information has to be passed to the components through flags.
 (flags are chosen over configMap, so that we don't fall into the trap of having
 more configuration resources/places). This makes each component get its configuration
 fully during the install/upgrade time through flags, without relying on external
-structures.
+structures. Another nice side-effect is that this forces a component rollout
+when a config is changed through linkerd upgrade(as the container args are updated).
 
 #### Required Components Configuration
 
