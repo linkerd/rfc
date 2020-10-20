@@ -5,7 +5,7 @@
 - Start Date: 8-7-2020
 - Target Date:
 - RFC PR:
-- Linkerd Issue: 
+- Linkerd Issue:
 [linkerd/linkerd2#3165](https://github.com/linkerd/linkerd2/issues/3165)
 - Reviewers: @grampelberg
 
