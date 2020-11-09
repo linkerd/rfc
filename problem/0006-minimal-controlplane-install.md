@@ -315,6 +315,8 @@ linkerd2 chart.
 add-on subcommands to `linkerd install/upgrade`. (Linkerd2 chart will still be
 using the current `linkerd-config`). These independent packages would follow the
 current release,build mechanisms.
+- Move commands that depends on a specific package as subcommands as chart
+specific commands. Ex: `linkerd viz routes`.
 - Update Proxy Injector with new CRD based model.
 - Remove dependency on partials i.e injection at install to all add-on packages
 and create Injector CR's for the same.
@@ -325,3 +327,5 @@ and create Injector CR's for the same.
 
 - Should the jsonPatches in `InjectorConfig` be exhaustive i.e full injection config?
 or they should build on the main one which performs the default injection.
+- Should the patch be the one to decide on what pod requests does it take or should
+the pod have some label to denote that?
