@@ -1,6 +1,6 @@
 # Title
 
-Contribution Name: (Profiling to Linkerd Rust controllers)
+Add Profiling to the Linkerd Policy Controller
 
 ## Problem
 
