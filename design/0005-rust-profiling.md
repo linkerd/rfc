@@ -17,8 +17,8 @@ policy-controller is operating.
 
 ## Potential Solution
 
-Integrate [pprof-rs](https://github.com/tikv/pprof-rs/blob/master/README.md)
-into the Linkerd Proxy-controller: pprof-rs is a profiling tool for Rust that
+__Integrate [pprof-rs](https://github.com/tikv/pprof-rs/blob/master/README.md)
+into the Linkerd Proxy-controller__: pprof-rs is a profiling tool for Rust that
 can be used to generate CPU profiles and heap snapshots. It can be integrated
 into the Linkerd control plane to provide dynamic profiling capabilities to
 users. This will involve adding the pprof-rs library as a dependency and
